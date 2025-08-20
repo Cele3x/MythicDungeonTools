@@ -42,6 +42,7 @@ function MDT:GetSeasonList()
 end
 
 local dungeonButtons = {}
+MDT.dungeonButtons = dungeonButtons
 local BUTTON_SIZE = 40
 
 function MDT:UpdateDungeonSelectHighlight()
