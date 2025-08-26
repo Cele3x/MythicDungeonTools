@@ -624,13 +624,13 @@ function MDT:CreateMapOnlyToggle(frame)
   frame.controlGroup:SetSize(300, 30)
   frame.controlGroup:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, 0)
   frame.controlGroup:SetFrameLevel(10)
-  
+
   -- Create background for the group (same as top panel)
   frame.controlGroup.bg = frame.controlGroup:CreateTexture(nil, "BACKGROUND")
   frame.controlGroup.bg:SetAllPoints()
   frame.controlGroup.bg:SetDrawLayer(canvasDrawLayer, -5)
   frame.controlGroup.bg:SetColorTexture(unpack(MDT.BackdropColor))
-  
+
   -- Make control group draggable (for map-only mode)
   frame.controlGroup:EnableMouse(true)
   frame.controlGroup:RegisterForDrag("LeftButton")
@@ -651,32 +651,32 @@ function MDT:CreateMapOnlyToggle(frame)
       MDT:GetDB().yoffset = y
     end
   end)
-  
+
   -- Create map-only toggle button (same style as close/maximize buttons)
   frame.mapOnlyToggle = CreateFrame("Button", "MDTMapOnlyToggle", frame.controlGroup, "UIPanelCloseButton")
   frame.mapOnlyToggle:SetSize(32, 32)
   frame.mapOnlyToggle:SetPoint("RIGHT", frame.controlGroup, "RIGHT", -1, 0)
   frame.mapOnlyToggle:SetFrameLevel(11)
-  
+
   -- Override the default close button texture with our custom icon
   frame.mapOnlyToggle:SetNormalTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up")
   frame.mapOnlyToggle:SetHighlightTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up")
   frame.mapOnlyToggle:SetPushedTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Down")
-  
+
   -- Make sure button is visible
   frame.mapOnlyToggle:Show()
-  
+
   -- Store original state
   frame.mapOnlyMode = false
-  
+
   -- Create transparency slider
   MDT:CreateMapTransparencySlider(frame)
-  
+
   -- Click handler
   frame.mapOnlyToggle:SetScript("OnClick", function()
     MDT:ToggleMapOnlyMode()
   end)
-  
+
   -- Tooltip
   frame.mapOnlyToggle:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
@@ -689,7 +689,7 @@ function MDT:CreateMapOnlyToggle(frame)
     end
     GameTooltip:Show()
   end)
-  
+
   frame.mapOnlyToggle:SetScript("OnLeave", function()
     GameTooltip:Hide()
   end)
@@ -704,7 +704,7 @@ function MDT:CreateMapTransparencySlider(frame)
   frame.transparencySlider:SetValue(1.0)
   frame.transparencySlider.frame:ClearAllPoints()
   frame.transparencySlider.frame:SetPoint("LEFT", frame.controlGroup, "LEFT", 8, 0)
-  
+
   -- Hide all text elements from the AceGUI slider
   if frame.transparencySlider.label then
     frame.transparencySlider.label:Hide()
@@ -718,13 +718,13 @@ function MDT:CreateMapTransparencySlider(frame)
   if frame.transparencySlider.editbox then
     frame.transparencySlider.editbox:Hide()
   end
-  
+
   -- Store default map opacity
   frame.mapOpacity = 1.0
-  
+
   -- Hide slider initially (only show in map-only mode)
   frame.transparencySlider.frame:Hide()
-  
+
   -- Create a container frame for the enemy percentage text to ensure proper layering
   frame.enemyPercentFrame = CreateFrame("Frame", nil, frame)
   frame.enemyPercentFrame:SetSize(80, 25)
@@ -732,7 +732,7 @@ function MDT:CreateMapTransparencySlider(frame)
   frame.enemyPercentFrame:SetFrameStrata("TOOLTIP")  -- Highest strata
   frame.enemyPercentFrame:SetFrameLevel(100)  -- Very high level
   frame.enemyPercentFrame:Hide()
-  
+
   -- Create enemy percentage text in the container frame
   frame.enemyPercentText = frame.enemyPercentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
   frame.enemyPercentText:SetPoint("CENTER", frame.enemyPercentFrame, "CENTER", 0, 0)
@@ -740,12 +740,12 @@ function MDT:CreateMapTransparencySlider(frame)
   frame.enemyPercentText:SetTextColor(1, 1, 1, 1)
   frame.enemyPercentText:SetJustifyH("CENTER")
   frame.enemyPercentText:SetJustifyV("MIDDLE")
-  
+
   -- Add a background to make it more visible
   frame.enemyPercentFrame.bg = frame.enemyPercentFrame:CreateTexture(nil, "BACKGROUND")
   frame.enemyPercentFrame.bg:SetAllPoints()
   frame.enemyPercentFrame.bg:SetColorTexture(0, 0, 0, 0.7)  -- Dark background
-  
+
   -- Slider callback
   frame.transparencySlider:SetCallback("OnValueChanged", function(widget, callbackName, value)
     MDT:SetMapTransparency(value)
@@ -756,7 +756,7 @@ end
 function MDT:SetMapTransparency(alpha)
   local frame = MDT.main_frame
   if not frame then return end
-  
+
   -- Only affect map tiles, not background elements
   -- Set transparency for map tiles
   for i = 1, 12 do
@@ -764,7 +764,7 @@ function MDT:SetMapTransparency(alpha)
       frame["mapPanelTile"..i]:SetAlpha(alpha)
     end
   end
-  
+
   -- Set transparency for large map tiles
   for i = 1, 10 do
     for j = 1, 15 do
@@ -773,7 +773,7 @@ function MDT:SetMapTransparency(alpha)
       end
     end
   end
-  
+
   -- Keep UI elements, mobs, routes, and overlays at full opacity
   -- This includes enemy positions, pull groups, routes, etc.
 end
@@ -781,12 +781,12 @@ end
 function MDT:HideBackgroundElements()
   local frame = MDT.main_frame
   if not frame then return end
-  
+
   -- Hide background elements completely
   if frame.background then
     frame.background:Hide()
   end
-  
+
   if frame.mainFrametex then
     frame.mainFrametex:Hide()
   end
@@ -795,12 +795,12 @@ end
 function MDT:ShowBackgroundElements()
   local frame = MDT.main_frame
   if not frame then return end
-  
+
   -- Show background elements
   if frame.background then
     frame.background:Show()
   end
-  
+
   if frame.mainFrametex then
     frame.mainFrametex:Show()
   end
@@ -809,15 +809,15 @@ end
 function MDT:UpdateEnemyPercentText()
   local frame = MDT.main_frame
   if not frame or not frame.enemyPercentText then return end
-  
+
   -- Get database access
   local db = MDT:GetDB()
-  if not db or not db.presets or not db.currentDungeonIdx or not db.currentPreset then 
+  if not db or not db.presets or not db.currentDungeonIdx or not db.currentPreset then
     frame.enemyPercentText:SetText("0%")
     frame.enemyPercentText:SetTextColor(1, 1, 1, 1)
-    return 
+    return
   end
-  
+
   -- Calculate enemy percentage like the progress bar does
   local currentPreset = db.presets[db.currentDungeonIdx] and db.presets[db.currentDungeonIdx][db.currentPreset[db.currentDungeonIdx]]
   if not currentPreset then
@@ -825,16 +825,16 @@ function MDT:UpdateEnemyPercentText()
     frame.enemyPercentText:SetTextColor(1, 1, 1, 1)
     return
   end
-  
+
   local teeming = currentPreset.value and currentPreset.value.teeming
   local grandTotal = MDT:CountForces()
   local dungeonCount = MDT.dungeonTotalCount and MDT.dungeonTotalCount[db.currentDungeonIdx]
   local totalMax = dungeonCount and (teeming and dungeonCount.teeming or dungeonCount.normal)
-  
+
   if totalMax and totalMax > 0 and grandTotal then
     local percentage = math.floor((grandTotal / totalMax) * 100)
     frame.enemyPercentText:SetText(percentage .. "%")
-    
+
     -- Color coding like the progress bar
     if percentage >= 100 then
       frame.enemyPercentText:SetTextColor(0, 1, 0, 1) -- Green when complete
@@ -852,7 +852,7 @@ end
 function MDT:ToggleMapOnlyMode()
   local frame = MDT.main_frame
   frame.mapOnlyMode = not frame.mapOnlyMode
-  
+
   if frame.mapOnlyMode then
     -- Hide UI elements
     frame.sidePanel:Hide()
@@ -864,7 +864,7 @@ function MDT:ToggleMapOnlyMode()
         frame.toolbar.toggleButton:Hide()
       end
     end
-    
+
     -- Hide close and maximize buttons
     if frame.closeButton then
       frame.closeButton:Hide()
@@ -872,7 +872,7 @@ function MDT:ToggleMapOnlyMode()
     if frame.maximizeButton then
       frame.maximizeButton:Hide()
     end
-    
+
     -- Hide dungeon selection elements
     if frame.seasonSelectionGroup then
       frame.seasonSelectionGroup.frame:Hide()
@@ -880,23 +880,23 @@ function MDT:ToggleMapOnlyMode()
     if frame.sublevelSelectionGroup then
       frame.sublevelSelectionGroup.frame:Hide()
     end
-    
+
     -- Hide dungeon buttons
     for _, button in pairs(MDT.dungeonButtons or {}) do
       button:Hide()
     end
-    
+
     -- Update button texture to show "exit" mode
     frame.mapOnlyToggle:SetNormalTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up")
     frame.mapOnlyToggle:SetHighlightTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Up")
     frame.mapOnlyToggle:SetPushedTexture("Interface\\Buttons\\UI-Panel-CollapseButton-Down")
-    
+
     -- Hide background elements and show transparency slider
     MDT:HideBackgroundElements()
     if frame.transparencySlider then
       frame.transparencySlider.frame:Show()
     end
-    
+
     -- Show and update enemy percentage text
     if frame.enemyPercentFrame then
       frame.enemyPercentFrame:Show()
@@ -910,7 +910,7 @@ function MDT:ToggleMapOnlyMode()
     if frame.toolbar and frame.toolbar.toggleButton then
       frame.toolbar.toggleButton:Show()
     end
-    
+
     -- Show close and maximize buttons
     if frame.closeButton then
       frame.closeButton:Show()
@@ -918,7 +918,7 @@ function MDT:ToggleMapOnlyMode()
     if frame.maximizeButton then
       frame.maximizeButton:Show()
     end
-    
+
     -- Show dungeon selection elements
     if frame.seasonSelectionGroup then
       frame.seasonSelectionGroup.frame:Show()
@@ -926,17 +926,17 @@ function MDT:ToggleMapOnlyMode()
     if frame.sublevelSelectionGroup then
       frame.sublevelSelectionGroup.frame:Show()
     end
-    
+
     -- Show dungeon buttons
     for _, button in pairs(MDT.dungeonButtons or {}) do
       button:Show()
     end
-    
+
     -- Update button texture back to normal
     frame.mapOnlyToggle:SetNormalTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up")
     frame.mapOnlyToggle:SetHighlightTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Up")
     frame.mapOnlyToggle:SetPushedTexture("Interface\\Buttons\\UI-Panel-ExpandButton-Down")
-    
+
     -- Show background elements and hide transparency slider
     MDT:ShowBackgroundElements()
     if frame.transparencySlider then
@@ -946,7 +946,7 @@ function MDT:ToggleMapOnlyMode()
       MDT:SetMapTransparency(1.0)
       frame.mapOpacity = 1.0
     end
-    
+
     -- Hide enemy percentage text
     if frame.enemyPercentFrame then
       frame.enemyPercentFrame:Hide()
@@ -4575,6 +4575,11 @@ function MDT:DrawPresetObject(obj, objectIndex, scale, currentPreset, currentSub
     else
       obj.d[1] = obj.d[1] or 5
       color.r, color.g, color.b = self:HexToRGB(obj.d[5])
+      --check if color is valid
+      if not color.r or not color.g or not color.b then
+        color.r, color.g, color.b = 1, 1, 1
+        obj.d[5] = "ffffff"
+      end
       --lines
       local x1, y1, x2, y2
       local lastx, lasty
@@ -5164,7 +5169,7 @@ function initFrames()
     main_frame.toolbar.toggleButton:Click()
     main_frame.toolbar.widgetGroup.frame:Hide()
   end
-  
+
   -- Create map-only toggle button
   MDT:CreateMapOnlyToggle(main_frame)
 
